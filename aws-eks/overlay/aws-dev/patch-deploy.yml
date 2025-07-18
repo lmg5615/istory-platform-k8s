@@ -3,8 +3,15 @@ kind: Deployment
 metadata:
   name: istory-app-deploy
   annotations:
-    istory.io/env: dev
+    istory.io/env: prod
     istory.io/tier: backend-app
     istory.io/infra: aws
 spec:
-  replicas: 1
+  replicas: 5
+  template:
+    spec:
+      initContainers:
+        - name: check-mysql-ready
+          command: ['sh',
+                    '-c',
+                    'until mysqladmin ping -u ${MYSQL_USER} -p${MYSQL_PASSWORD} -h cwave-rds.c7i6u2042a1i.ap-northeast-2.rds.amazonaws.com:3306; do echo waiting for database; sleep 2; done;']
